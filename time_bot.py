@@ -58,7 +58,7 @@ async def sleep_until_next_minute():
 async def update_forever():
     await client.start()
 
-    base_image = 'base.jpg'  
+    base_image = 'base.jpg' 
     while True:
         now = get_iran_time()
         time_str = now.strftime('%H:%M')
