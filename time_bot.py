@@ -70,7 +70,7 @@ async def update_forever():
 
         try:
             file = await client.upload_file(output_image)
-            await client.upload_profile_photo(file)
+            await client(functions.photos.UploadProfilePhotoRequest(file))
             print(f'✅ عکس پروفایل آپدیت شد: {time_str}')
         except Exception as e:
             print(f'❌ خطا در آپدیت عکس پروفایل: {e}')
