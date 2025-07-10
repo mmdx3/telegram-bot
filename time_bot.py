@@ -1,14 +1,13 @@
-from PIL import Image, ImageDraw, ImageFont
 from telethon import TelegramClient, functions
 import asyncio
 import datetime
 import pytz
-from telethon.tl.functions.photos import UploadProfilePhotoRequest
 
 
 
 api_id = 26865532
 api_hash = '4db5fd680068290104076d1e80511638'
+
 
 client = TelegramClient('mohammad_session', api_id, api_hash)
 
@@ -28,27 +27,6 @@ def to_digital_font(text):
     }
     return ''.join(digits_map.get(c, c) for c in text)
 
-def create_profile_pic_with_time(base_image_path, output_path, time_text):
-    img = Image.open(base_image_path).convert('RGBA')
-    draw = ImageDraw.Draw(img)
-
-    font = ImageFont.truetype('digital-7.ttf', 50)
-
-    width, height = img.size
-    bbox = draw.textbbox((0, 0), time_text, font=font)
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
-
-    x = (width - text_width) / 2
-    y = height - text_height - 20
-
-    draw.text((x, y), time_text, font=font, fill=(255, 255, 255, 255))
-
-    img = img.convert('RGB')
-    img = img.resize((512, 512))
-
-    img.save(output_path)
-
 def get_iran_time():
     tehran = pytz.timezone("Asia/Tehran")
     return datetime.datetime.now(tehran)
@@ -61,22 +39,10 @@ async def sleep_until_next_minute():
 async def update_forever():
     await client.start()
 
-    base_image = 'base.jpg' 
     while True:
         now = get_iran_time()
         time_str = now.strftime('%H:%M')
         digital_time = to_digital_font(time_str)
-
-        output_image = f'profile_with_time_{now.strftime("%H%M")}.jpg'
-
-        create_profile_pic_with_time(base_image, output_image, digital_time)
-
-        try:
-            file = await client.upload_file(output_image)
-            await client(UploadProfilePhotoRequest(file))
-            print(f'✅ عکس پروفایل آپدیت شد: {time_str}')
-        except Exception as e:
-            print(f'❌ خطا در آپدیت عکس پروفایل: {e}')
 
         fancy_name = f'MOHAMMAD | {digital_time}'
         fancy_bio = f'دیگه پسر خوبی شدم :) | {digital_time}'
@@ -98,6 +64,3 @@ async def main():
 
 with client:
     client.loop.run_until_complete(main())
-
-
-# v9S6jy4eztzgKLuk
