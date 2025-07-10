@@ -29,7 +29,7 @@ def create_profile_pic_with_time(base_image_path, output_path, time_text):
     img = Image.open(base_image_path).convert('RGBA')
     draw = ImageDraw.Draw(img)
 
-    font = ImageFont.truetype('digital-7.ttf', 50)  
+    font = ImageFont.truetype('digital-7.ttf', 50)
 
     width, height = img.size
     bbox = draw.textbbox((0, 0), time_text, font=font)
@@ -37,12 +37,14 @@ def create_profile_pic_with_time(base_image_path, output_path, time_text):
     text_height = bbox[3] - bbox[1]
 
     x = (width - text_width) / 2
-    y = height - text_height - 20  
+    y = height - text_height - 20
 
     draw.text((x, y), time_text, font=font, fill=(255, 255, 255, 255))
 
-    img.save(output_path)
+    img = img.convert('RGB')
+    img = img.resize((512, 512))
 
+    img.save(output_path)
 
 def get_iran_time():
     tehran = pytz.timezone("Asia/Tehran")
@@ -55,23 +57,24 @@ async def sleep_until_next_minute():
 
 async def update_forever():
     await client.start()
-    
-    base_image = 'base.jpg'  
-    output_image = 'profile_with_time.png'  
 
+    base_image = 'base.jpg'  
     while True:
         now = get_iran_time()
         time_str = now.strftime('%H:%M')
         digital_time = to_digital_font(time_str)
-        
+
+        output_image = f'profile_with_time_{now.strftime("%H%M")}.jpg'
+
         create_profile_pic_with_time(base_image, output_image, digital_time)
+
         try:
             file = await client.upload_file(output_image)
-            await client(functions.photos.UploadProfilePhotoRequest(file))
+            await client(functions.photos.UploadProfilePhotoRequest(photo=file))
             print(f'✅ عکس پروفایل آپدیت شد: {time_str}')
         except Exception as e:
             print(f'❌ خطا در آپدیت عکس پروفایل: {e}')
-            
+
         fancy_name = f'MOHAMMAD | {digital_time}'
         fancy_bio = f'دیگه پسر خوبی شدم :) | {digital_time}'
 
@@ -85,12 +88,10 @@ async def update_forever():
             print(f"❌ خطا: {e}")
 
         await sleep_until_next_minute()
-    
 
 async def main():
     await client.start()
     await update_forever()
-
 
 with client:
     client.loop.run_until_complete(main())
