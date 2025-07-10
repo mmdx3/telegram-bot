@@ -3,6 +3,9 @@ from telethon import TelegramClient, functions
 import asyncio
 import datetime
 import pytz
+from telethon.tl.functions.photos import UploadProfilePhotoRequest
+
+
 
 api_id = 26865532
 api_hash = '4db5fd680068290104076d1e80511638'
@@ -70,7 +73,7 @@ async def update_forever():
 
         try:
             file = await client.upload_file(output_image)
-            await client(functions.photos.UploadProfilePhotoRequest(file))
+            await client(UploadProfilePhotoRequest(file))
             print(f'✅ عکس پروفایل آپدیت شد: {time_str}')
         except Exception as e:
             print(f'❌ خطا در آپدیت عکس پروفایل: {e}')
@@ -95,3 +98,6 @@ async def main():
 
 with client:
     client.loop.run_until_complete(main())
+
+
+# v9S6jy4eztzgKLuk
