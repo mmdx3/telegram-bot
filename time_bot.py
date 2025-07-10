@@ -32,13 +32,17 @@ def create_profile_pic_with_time(base_image_path, output_path, time_text):
     font = ImageFont.truetype('digital-7.ttf', 50)  
 
     width, height = img.size
-    text_width, text_height = draw.textsize(time_text, font=font)
+    bbox = draw.textbbox((0, 0), time_text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
     x = (width - text_width) / 2
     y = height - text_height - 20  
 
     draw.text((x, y), time_text, font=font, fill=(255, 255, 255, 255))
 
     img.save(output_path)
+
 
 def get_iran_time():
     tehran = pytz.timezone("Asia/Tehran")
